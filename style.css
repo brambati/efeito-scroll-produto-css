@@ -1,0 +1,58 @@
+/* Efeito de scroll de página de produto — 100% CSS, zero JavaScript */
+* { margin: 0; box-sizing: border-box; }
+body { background: #000; color: #f5f5f7; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.intro, .fim { min-height: 100vh; display: grid; place-content: center; text-align: center; gap: 12px; }
+.kicker { color: #a1a1aa; letter-spacing: .2em; text-transform: uppercase; font-size: 14px; }
+h1 { font-size: clamp(40px, 8vw, 96px); }
+
+/* 1. Estrutura: seção alta + palco sticky */
+.cena { height: 300vh; view-timeline-name: --cena; }
+.palco {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 40px;
+  overflow: hidden;
+}
+.produto { width: min(60vw, 420px); }
+
+/* Versão estática (fallback): tudo visível, sem animação */
+.revela {
+  font-size: clamp(32px, 6vw, 72px);
+  max-width: 14ch;
+  text-align: center;
+  line-height: 1.05;
+}
+
+/* 2 e 3. O efeito só liga se o navegador suporta e o usuário aceita animação */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .produto {
+      animation: girar linear both;
+      animation-timeline: --cena;            /* o scroll da .cena controla o tempo */
+      animation-range: contain 0% contain 100%;
+    }
+    .revela {
+      background: linear-gradient(90deg, #f5f5f7 50%, #3f3f46 50%);
+      background-size: 200% 100%;            /* gradiente 2x mais largo que o texto */
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      animation: acender linear both;
+      animation-timeline: --cena;
+      animation-range: contain 30% contain 90%;
+    }
+  }
+}
+
+@keyframes girar {
+  from { transform: scale(.6) rotate(-25deg); opacity: .2; }
+  to   { transform: scale(1.15) rotate(0deg); opacity: 1; }
+}
+@keyframes acender {
+  from { background-position: 100% 0; }
+  to   { background-position: 0% 0; }
+}
